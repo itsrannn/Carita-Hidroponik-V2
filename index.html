@@ -18,12 +18,15 @@
 
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/design-tokens-v2.css" />
+    <link rel="stylesheet" href="css/components-v2.css" />
+    <link rel="stylesheet" href="css/home-v2.css" />
     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)" />
     <link rel="stylesheet" href="css/chat-widget.css" />
 
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -71,207 +74,116 @@
   ">
     <div id="header-include"></div>
 
-    <section id="Home" class="hero-section">
-      <div class="container" x-data="products" x-init="init()">
-        <!-- REFACTORED HERO SLIDER -->
-        <div id="hero-slider" class="hero-slider" x-data="heroSlider()">
-          <div class="slide-item" :class="{ 'active': currentIndex === 0 }">
-            <img src="img/Flyer-1.jpg" alt="12.12 Sale Promo" class="hero-img" fetchpriority="high" />
-            <div class="hero-content">
-              <h1 class="hero-title" x-text="$store.i18n.t('hero.title1')">12.12 Big Sale!</h1>
-              <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle1')">Get up to 50% off on selected items.</p>
-              <a href="#Product" class="btn btn-accent btn-lg" x-text="$store.i18n.t('hero.button1')">Shop Now</a>
+    <main class="home-v2" x-data="products" x-init="init()">
+      <section id="Home" class="homepage-hero">
+        <div class="container hero-v2-grid">
+          <div class="hero-v2-content">
+            <span class="hero-kicker"><i data-feather="leaf"></i> Affordable premium hydroponic store</span>
+            <h1 class="hero-v2-title">Mulai hidroponik dari rumah dengan lebih mudah.</h1>
+            <p class="hero-v2-copy">Temukan benih, nutrisi, media tanam, dan perlengkapan pilihan untuk pemula maupun hobiis tanaman.</p>
+            <div class="hero-v2-actions">
+              <a href="#Product" class="btn btn-primary">Belanja Sekarang</a>
+              <a href="#starter-bundle" class="btn btn-secondary">Lihat Paket Pemula</a>
+            </div>
+            <form class="hero-search-card" @submit.prevent="handleSearch(searchTerm); document.getElementById('Product')?.scrollIntoView({ behavior: 'smooth' })">
+              <input type="search" x-model.debounce.250ms="searchTerm" placeholder="Cari benih, nutrisi, media tanam..." aria-label="Cari produk">
+              <button type="submit" class="btn btn-primary">Cari</button>
+            </form>
+          </div>
+          <div class="hero-visual-card" aria-label="Ilustrasi hidroponik rumahan">
+            <img src="img/Flyer-1.jpg" alt="Produk hidroponik pilihan Carita Hidroponik" fetchpriority="high">
+            <div class="hero-floating-note">
+              <strong>Siap tumbuh dari rumah</strong>
+              <span>Pilihan produk dibuat ringkas agar lebih mudah mulai.</span>
             </div>
           </div>
-          <div class="slide-item" :class="{ 'active': currentIndex === 1 }">
-            <img src="img/Flyer-2.jpg" alt="New A-B Mix Nutrition" class="hero-img" loading="lazy" />
-            <div class="hero-content">
-              <h1 class="hero-title" x-text="$store.i18n.t('hero.title2')">New A-B Mix Nutrition</h1>
-              <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle2')">The perfect formula for your hydroponic plants.</p>
-              <a href="#Product" class="btn btn-accent btn-lg" x-text="$store.i18n.t('hero.button2')">Learn More</a>
-            </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container responsive-grid trust-grid">
+          <article class="trust-card"><span class="trust-icon"><i data-feather="check-circle"></i></span><h3>Produk terkurasi</h3><p>Dipilih untuk kebutuhan hidroponik rumahan yang praktis.</p></article>
+          <article class="trust-card"><span class="trust-icon"><i data-feather="smile"></i></span><h3>Cocok untuk pemula</h3><p>Produk dan paket dibuat mudah dipahami sejak awal.</p></article>
+          <article class="trust-card"><span class="trust-icon"><i data-feather="package"></i></span><h3>Packing aman</h3><p>Pesanan dikemas rapi agar sampai dengan kondisi baik.</p></article>
+          <article class="trust-card"><span class="trust-icon"><i data-feather="book-open"></i></span><h3>Panduan tersedia</h3><p>Belajar hidroponik lebih tenang dengan arahan sederhana.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="categories">
+        <div class="container">
+          <div class="section-header">
+            <div><p class="section-eyebrow">Kategori</p><h2>Belanja sesuai kebutuhan tanammu.</h2><p>Pilih kategori utama tanpa harus membuka filter panjang di homepage.</p></div>
           </div>
-          <div class="slide-item" :class="{ 'active': currentIndex === 2 }">
-            <img src="img/Flyer-3.jpg" alt="Starter Kit for Beginners" class="hero-img" loading="lazy" />
-            <div class="hero-content">
-              <h1 class="hero-title" x-text="$store.i18n.t('hero.title3')">Starter Kit for Beginners</h1>
-              <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle3')">Everything you need to start your hydroponic journey.</p>
-              <a href="#Product" class="btn btn-accent btn-lg" x-text="$store.i18n.t('hero.button3')">Get Yours</a>
-            </div>
+          <div class="responsive-grid category-grid">
+            <a class="category-card" href="#Product" @click="selectedCategory = 'benih'"><span class="category-icon"><i data-feather="sun"></i></span><h3>Benih</h3><p>Mulai dari sayur daun hingga tanaman favorit.</p><span>Lihat produk</span></a>
+            <a class="category-card" href="#Product" @click="selectedCategory = 'nutrisi'"><span class="category-icon"><i data-feather="droplet"></i></span><h3>Nutrisi</h3><p>AB mix dan kebutuhan nutrisi tanaman.</p><span>Lihat produk</span></a>
+            <a class="category-card" href="#Product" @click="selectedCategory = 'media'"><span class="category-icon"><i data-feather="grid"></i></span><h3>Media Tanam</h3><p>Media bersih untuk sistem hidroponik.</p><span>Lihat produk</span></a>
+            <a class="category-card" href="#Product" @click="selectedCategory = 'peralatan'"><span class="category-icon"><i data-feather="tool"></i></span><h3>Peralatan</h3><p>Perlengkapan pendukung kebun kecilmu.</p><span>Lihat produk</span></a>
+            <a class="category-card" href="#starter-bundle"><span class="category-icon"><i data-feather="gift"></i></span><h3>Paket Pemula</h3><p>Bundle ringkas agar tidak bingung memilih.</p><span>Lihat paket</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Promo paket pemula">
+        <div class="container promo-strip">
+          <div><p class="section-eyebrow">Promo pilihan</p><h2>Paket pemula hidroponik mulai dari harga terjangkau</h2><p>Aksen promo tetap jelas tanpa membuat halaman terasa ramai.</p></div>
+          <div class="promo-actions"><a href="#starter-bundle" class="btn btn-commercial">Lihat Paket</a></div>
+        </div>
+      </section>
+
+      <section class="section" id="Product">
+        <div class="container">
+          <div class="section-header">
+            <div><p class="section-eyebrow">Produk pilihan</p><h2>Best Sellers untuk mulai menanam.</h2><p>Maksimal 8 produk tampil di homepage agar tetap curated dan mudah dipilih.</p></div>
+            <a href="#categories" class="btn btn-secondary">Pilih kategori</a>
           </div>
 
-          <button @click="prevSlide()" class="slider-arrow prev" :aria-label="$store.i18n.t('hero.prevSlide')">
-            <i data-feather="chevron-left"></i>
-          </button>
-          <button @click="nextSlide()" class="slider-arrow next" :aria-label="$store.i18n.t('hero.nextSlide')">
-            <i data-feather="chevron-right"></i>
-          </button>
+          <template x-if="$store.products.isLoading">
+            <div class="responsive-grid products-home-grid">
+              <template x-for="i in 8" :key="i"><div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-text-group"><div class="skeleton-text skeleton-title"></div><div class="skeleton-text skeleton-price"></div></div></div></template>
+            </div>
+          </template>
 
-          <div class="slider-dots">
-            <template x-for="(_, index) in slidesCount" :key="index">
-              <button @click="goToSlide(index)" class="slider-dot" :class="{ 'active': currentIndex === index }" :aria-label="$store.i18n.t('hero.goToSlide', 'Go to slide') + ` ${index + 1}`"></button>
+          <div x-show="!$store.products.isLoading" x-transition>
+            <div class="responsive-grid products-home-grid">
+              <template x-for="item in processedItems().slice(0, 8)" :key="item.id"><div x-html="renderProductCard(item)"></div></template>
+            </div>
+            <template x-if="processedItems().length === 0">
+              <div class="catalog-state catalog-state-empty card" style="margin-top: 18px; padding: 28px; text-align: center;"><i data-feather="package"></i><h3>Produk belum ditemukan</h3><p>Coba kata kunci lain atau kembali ke semua kategori.</p><button type="button" class="btn btn-secondary" @click="resetFilters()">Reset filter</button></div>
             </template>
           </div>
         </div>
-        <!-- END REFACTORED HERO SLIDER -->
+      </section>
 
-        <div class="product-toolbar container">
-          <form class="search-bar" @submit.prevent="handleSearch(searchTerm)">
-            <input type="search" class="input" x-model.debounce.250ms="searchTerm" :placeholder="$store.i18n.t('search.placeholder')" aria-label="Cari produk">
-            <button type="submit" class="search-button search-button-borderless" aria-label="Cari">
-              <i data-feather="search"></i>
-            </button>
-          </form>
-          <label class="sort-control">
-            <span x-text="$store.i18n.t('sort.by')">Urutkan</span>
-            <select class="select" x-model="sortOption" @change="currentPage = 1">
-              <option value="default" x-text="$store.i18n.t('sort.default')">Default</option>
-              <option value="name-asc" x-text="$store.i18n.t('sort.nameAsc')">Nama A-Z</option>
-              <option value="price-asc" x-text="$store.i18n.t('sort.priceAsc')">Harga: Rendah ke Tinggi</option>
-              <option value="price-desc" x-text="$store.i18n.t('sort.priceDesc')">Harga: Tinggi ke Rendah</option>
-            </select>
-          </label>
+      <section class="section" id="starter-bundle">
+        <div class="container bundle-card">
+          <div><p class="section-eyebrow">Starter bundle</p><h2>Baru mulai hidroponik?</h2><p>Baru mulai hidroponik? Pilih paket yang sudah disusun agar lebih mudah digunakan dari rumah.</p><ul class="bundle-list"><li>✓ Produk dasar dalam satu pilihan</li><li>✓ Lebih mudah untuk pemula</li><li>✓ Cocok untuk eksperimen kebun kecil</li></ul><div class="bundle-actions"><a href="#Product" class="btn btn-commercial" @click="selectedCategory = 'promo'">Lihat Paket Pemula</a></div></div>
+          <div class="bundle-visual"><img src="img/coming-soon.jpg" alt="Placeholder paket pemula hidroponik" loading="lazy"></div>
         </div>
+      </section>
 
-        <div class="layout container">
-          <aside class="sidebar" id="categorySidebar">
-            <div class="sidebar-header">
-              <h4 x-text="$store.i18n.t('nav.categories')">Categories</h4>
-              <button id="sidebar-collapse" class="collapse-btn" aria-expanded="true" aria-controls="categoryList">−</button>
-            </div>
-
-            <nav id="categoryList" class="category-list">
-              <ul>
-                <li><a href="#" @click.prevent="selectedCategory = 'all'" :class="{ 'active': selectedCategory === 'all' }" x-text="$store.i18n.t('nav.products')">All Products</a></li>
-                <li><a href="#" @click.prevent="selectedCategory = 'benih'" :class="{ 'active': selectedCategory === 'benih' }" x-text="$store.i18n.t('nav.seeds')">Seeds</a></li>
-                <li><a href="#" @click.prevent="selectedCategory = 'nutrisi'" :class="{ 'active': selectedCategory === 'nutrisi' }" x-text="$store.i18n.t('nav.nutrition')">Nutrition</a></li>
-                <li><a href="#" @click.prevent="selectedCategory = 'media'" :class="{ 'active': selectedCategory === 'media' }" x-text="$store.i18n.t('nav.media')">Media</a></li>
-                <li><a href="#" @click.prevent="selectedCategory = 'peralatan'" :class="{ 'active': selectedCategory === 'peralatan' }" x-text="$store.i18n.t('nav.equipment')">Equipment</a></li>
-                <li><a href="#" @click.prevent="selectedCategory = 'promo'" :class="{ 'active': selectedCategory === 'promo' }" x-text="$store.i18n.t('nav.promos')">Promos</a></li>
-              </ul>
-            </nav>
-
-            <div class="sidebar-footer">
-              <p class="small muted"><span x-text="$store.i18n.t('sidebar.help')">Need help?</span> <a href="contact.html" x-text="$store.i18n.t('sidebar.contact')">Contact Us</a></p>
-            </div>
-          </aside>
-
-          <main class="main-content">
-            <template x-if="!$store.products.isLoading && promoItems().length > 0">
-              <section id="promo" class="promo-section">
-                <div class="page-header">
-                  <div class="header-left">
-                    <h1 x-text="$store.i18n.t('promos.title')">Promotions</h1>
-                    <p class="muted" x-text="$store.i18n.t('promos.subtitle')">Don't miss out on our special deals</p>
-                  </div>
-                </div>
-
-                <div class="products-grid product-grid-responsive">
-                  <template x-for="item in promoItems()" :key="item.id">
-                    <div x-html="renderProductCard(item)"></div>
-                  </template>
-                </div>
-              </section>
-            </template>
-
-            <section id="Product" class="page-header">
-              <div class="header-left">
-                <h1 x-text="$store.i18n.t('products.title')">Featured Products</h1>
-                <p class="muted" x-text="$store.i18n.t('products.subtitle')">Check out our best-selling products</p>
-              </div>
-              <div class="header-actions product-count" x-show="!$store.products.isLoading">
-                <span x-text="processedItems().length + ' produk'"></span>
-              </div>
-            </section>
-
-            <!-- Skeleton Loading Grid -->
-            <template x-if="$store.products.isLoading">
-              <section class="products-grid product-grid-responsive">
-                <template x-for="i in 8" :key="i">
-                  <div class="product-card-skeleton">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-text-group">
-                      <div class="skeleton-text skeleton-title"></div>
-                      <div class="skeleton-text skeleton-price"></div>
-                    </div>
-                  </div>
-                </template>
-              </section>
-            </template>
-
-            <div x-show="!$store.products.isLoading" x-transition>
-              <section id="productsGrid" class="products-grid product-grid-responsive">
-                <template x-for="item in paginatedItems()" :key="item.id">
-                  <div x-html="renderProductCard(item)"></div>
-                </template>
-
-                <template x-if="processedItems().length === 0">
-                  <div class="catalog-state catalog-state-empty">
-                    <i data-feather="package"></i>
-                    <h3 x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.emptyTitle')">Produk tidak ditemukan</h3>
-                    <h3 x-show="$store.products.errorMessage" x-text="$store.i18n.t('products.errorTitle')">Produk belum tersedia</h3>
-                    <p x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.noneFound')">No products found.</p>
-                    <p x-show="$store.products.errorMessage" x-text="$store.products.errorMessage">Products are temporarily unavailable.</p>
-                    <button type="button" class="btn btn-secondary" @click="resetFilters()" x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.resetFilters')">Reset filter</button>
-                  </div>
-                </template>
-              </section>
-
-              <nav class="pagination" x-show="processedItems().length > 0">
-                <a href="#" @click.prevent="goToPage(currentPage - 1)" x-show="currentPage > 1" :aria-label="$store.i18n.t('pagination.prev')">&laquo;</a>
-
-                <template x-for="page in totalPages()" :key="page">
-                  <a
-                    href="#"
-                    @click.prevent="goToPage(page)"
-                    :class="{ 'active': page === currentPage }"
-                    x-text="page"
-                    :aria-current="page === currentPage ? 'page' : false"
-                  ></a>
-                </template>
-
-                <a href="#" @click.prevent="goToPage(currentPage + 1)" x-show="currentPage < totalPages()" :aria-label="$store.i18n.t('pagination.next')">&raquo;</a>
-              </nav>
-            </div>
-          </main>
+      <section class="section" id="guides">
+        <div class="container">
+          <div class="section-header"><div><p class="section-eyebrow">Panduan</p><h2>Belajar pelan-pelan, hasilnya lebih tenang.</h2><p>Artikel singkat untuk membangun kepercayaan dan membantu pelanggan memilih.</p></div></div>
+          <div class="responsive-grid guide-grid">
+            <article class="guide-card card"><h3>Cara mulai hidroponik dari rumah</h3><p>Langkah sederhana untuk memahami alat, air, nutrisi, dan tanaman pertama.</p><a href="#">Baca panduan</a></article>
+            <article class="guide-card card"><h3>Memilih benih untuk pemula</h3><p>Tips memilih tanaman yang mudah dirawat dan cepat terlihat perkembangannya.</p><a href="#">Baca panduan</a></article>
+            <article class="guide-card card"><h3>Kapan nutrisi perlu ditambah?</h3><p>Kenali tanda-tanda tanaman membutuhkan perawatan nutrisi yang lebih tepat.</p><a href="#">Baca panduan</a></article>
+          </div>
         </div>
+      </section>
+    </main>
+
+    <footer class="footer-v2">
+      <div class="container footer-v2-grid">
+        <div><h3>Carita Hidroponik</h3><p>Toko hidroponik premium-terjangkau untuk benih, nutrisi, media tanam, peralatan, dan paket pemula.</p></div>
+        <div><h4>Bantuan</h4><ul><li><a href="contact.html">Hubungi kami</a></li><li><a href="my-cart.html">Keranjang</a></li><li><a href="my-account.html">Akun saya</a></li></ul></div>
+        <div><h4>Kontak</h4><ul><li><a href="mailto:info@caritahidroponik.com">Email</a></li><li><a href="https://wa.me/628213969880" target="_blank" rel="noopener">WhatsApp</a></li></ul></div>
+        <div><h4>Kategori</h4><ul><li><a href="#categories">Benih</a></li><li><a href="#categories">Nutrisi</a></li><li><a href="#categories">Paket Pemula</a></li></ul></div>
+        <div><h4>Newsletter</h4><p>Tips hidroponik ringan langsung ke inbox.</p><form class="newsletter-form"><input type="email" placeholder="Email kamu" aria-label="Email newsletter"><button class="btn btn-commercial" type="submit">Daftar</button></form></div>
       </div>
-    </section>
-
-    <!-- REFACTORED NEWS SECTION -->
-    <section class="news-section container" x-data="newsSection()" x-init="fetchNews()">
-      <h2 class="section-title" x-text="$store.i18n.t('news.latest')">Latest News</h2>
-      <div class="news-grid">
-        <template x-if="isLoading">
-          <p class="loading-text" style="text-align: center; padding: 2rem;" x-text="$store.i18n.t('news.loading')">Memuat berita...</p>
-        </template>
-        <template x-if="!isLoading && newsItems.length === 0">
-          <p style="text-align: center;" x-text="$store.i18n.t('news.noneFound')">Belum ada berita yang diterbitkan.</p>
-        </template>
-        <template x-for="newsItem in newsItems" :key="newsItem.id">
-          <a :href="`news-detail.html?id=${newsItem.id}`" class="news-card-link">
-            <article class="news-card">
-              <div class="news-card-image-wrapper">
-                <img :src="newsItem.image_url || 'img/coming-soon.jpg'" :alt="newsItem.title[$store.i18n.lang] || newsItem.title['id']" loading="lazy" />
-              </div>
-              <div class="news-card-content">
-                <p class="news-card-meta" x-text="formatDate(newsItem.created_at)"></p>
-                <h3 x-text="newsItem.title[$store.i18n.lang] || newsItem.title['id']"></h3>
-                <p class="news-card-excerpt" x-text="newsItem.excerpt[$store.i18n.lang] || newsItem.excerpt['id']"></p>
-              </div>
-            </article>
-          </a>
-        </template>
-      </div>
-    </section>
-    <!-- END REFACTORED NEWS SECTION -->
-
-    <section class="preview">
-      <h2 x-text="$store.i18n.t('about.title')">About Us</h2>
-      <p x-text="$store.i18n.t('about.subtitle')">Learn more about our mission to provide the best hydroponic products.</p>
-    </section>
-
-    <div id="footer-include"></div>
+      <div class="container footer-bottom-v2"><p>© 2026 Carita Hidroponik — All Rights Reserved.</p></div>
+    </footer>
 
     <script defer src="https://unpkg.com/feather-icons"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
