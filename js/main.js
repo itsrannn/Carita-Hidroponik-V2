@@ -9,9 +9,9 @@ document.addEventListener('alpine:init', () => {
   }));
 });
 
-const API_BASE_URL = 'https://carita-hidroponik-backend.vercel.app';
-const SNAP_TOKEN_ENDPOINT = '/api/payment/create-snap-token';
-const APP_DEBUG = new URLSearchParams(window.location.search).has('debug');
+const API_BASE_URL = window.CaritaConfig?.api?.baseUrl || 'https://carita-hidroponik-backend.vercel.app';
+const SNAP_TOKEN_ENDPOINT = window.CaritaConfig?.api?.snapTokenEndpoint || '/api/payment/create-snap-token';
+const APP_DEBUG = Boolean(window.CaritaConfig?.debug ?? new URLSearchParams(window.location.search).has('debug'));
 window.API_BASE_URL = API_BASE_URL;
 window.APP_DEBUG = APP_DEBUG;
 
@@ -78,25 +78,7 @@ window.getSafeAppRedirect = (redirectValue = '') => {
     }
 };
 
-window.showSiteNotification = (message, isError = false) => {
-    const text = String(message || '').trim();
-    if (!text) return;
-
-    let notification = document.getElementById('notification');
-    if (!notification) {
-        notification = document.createElement('div');
-        notification.id = 'notification';
-        notification.className = 'notification';
-        notification.setAttribute('role', 'status');
-        notification.setAttribute('aria-live', 'polite');
-        document.body.appendChild(notification);
-    }
-
-    notification.textContent = text;
-    notification.style.backgroundColor = isError ? '#c62828' : 'var(--accent)';
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3000);
-};
+window.showSiteNotification = window.CaritaUtils?.showToast || window.showSiteNotification || ((message) => console.info('[Notification]', message));
 
 window.ensureSupabaseProfile = async (user) => {
     if (!window.supabase || !user?.id) return null;
@@ -374,15 +356,7 @@ window.translateStatus = (status = '') => {
     return map[normalized] || normalized || '-';
 };
 
-window.formatRupiah = (num) => (
-    Number.isNaN(Number(num))
-        ? 'Rp 0'
-        : new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(Number(num))
-);
+window.formatRupiah = window.CaritaUtils?.formatRupiah || window.formatRupiah;
 
 window.resolveImagePath = (path) => {
     const fallback = window.toAppPath('img/coming-soon.jpg');
@@ -691,12 +665,7 @@ document.addEventListener('alpine:init', () => {
                     throw new Error('Supabase client is not available on window.supabase');
                 }
 
-                const { data, error } = await window.supabase
-                    .from('products')
-                    .select('*')
-                    .order('id', { ascending: true });
-
-                if (error) throw error;
+                const data = await window.CaritaServices.supabase.listProducts({ orderBy: 'id', ascending: true });
 
                 this.all = (data || []).map((item) => {
                     const nameObj = typeof item.name === 'object' && item.name

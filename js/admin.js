@@ -315,6 +315,8 @@ function normalizeContentItems(data, preferredKey) {
 }
 
 async function loadContentItems(table, preferredKey, label) {
+    if (table === 'products') return window.CaritaServices.supabase.listProducts({ orderBy: 'created_at', ascending: false });
+    if (table === 'news') return window.CaritaServices.supabase.listNews({ orderBy: 'created_at', ascending: false });
     const { data, error } = await window.supabase.from(table).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     return normalizeContentItems(data, preferredKey);

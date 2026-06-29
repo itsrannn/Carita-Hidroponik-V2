@@ -29,13 +29,10 @@ window.AdminDashboardPage = (() => {
     }
 
     async function fetchOrders() {
-        const { data, error } = await window.supabase
-            .from('orders')
-            .select('*, profiles(full_name, email)')
-            .order('created_at', { ascending: false })
-            .limit(500);
-        if (error) throw error;
-        return Array.isArray(data) ? data : [];
+        return window.CaritaServices.supabase.listOrders({
+            select: '*, profiles(full_name, email)',
+            limit: 500
+        });
     }
 
     function buildAnalytics(orders) {
@@ -104,13 +101,13 @@ window.AdminDashboardPage = (() => {
     async function fetchFollowUpData() {
         const result = { products: [], news: [], shipping: [] };
         const [products, news, shipping] = await Promise.allSettled([
-            window.supabase.from('products').select('*').limit(500),
-            window.supabase.from('news').select('*').limit(500),
-            window.supabase.from('shipping_zones').select('*').limit(100)
+            window.CaritaServices.supabase.listProducts({ limit: 500, orderBy: false }),
+            window.CaritaServices.supabase.listNews({ limit: 500, orderBy: false }),
+            window.CaritaServices.supabase.listShippingZones({ limit: 100 })
         ]);
-        if (products.status === 'fulfilled') result.products = products.value.data || [];
-        if (news.status === 'fulfilled') result.news = news.value.data || [];
-        if (shipping.status === 'fulfilled') result.shipping = shipping.value.data || [];
+        if (products.status === 'fulfilled') result.products = products.value || [];
+        if (news.status === 'fulfilled') result.news = news.value || [];
+        if (shipping.status === 'fulfilled') result.shipping = shipping.value || [];
         return result;
     }
 

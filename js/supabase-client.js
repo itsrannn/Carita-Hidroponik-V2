@@ -1,8 +1,8 @@
 // js/supabase-client.js
 
-const rawSupabaseUrl = 'https://thetdckuftpzyubvlbju.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZXRkY2t1ZnRwenl1YnZsYmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3Nzk2NzgsImV4cCI6MjA3ODM1NTY3OH0.79TyhVbyQzKa9xFeg9JxVLxcN0NVyYBx-_VniQFfQZg';
-const supabaseUrl = rawSupabaseUrl.replace(/\/+$/, '');
+const config = window.CaritaConfig || {};
+const supabaseUrl = (config.supabase?.url || window.__SUPABASE_CONFIG?.url || '').replace(/\/+$/, '');
+const supabaseKey = config.supabase?.anonKey || window.__SUPABASE_CONFIG?.anonKey || '';
 
 window.__SUPABASE_CONFIG = {
   url: supabaseUrl,
