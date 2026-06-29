@@ -9,6 +9,7 @@ window.AdminShippingPage = (() => {
   let zones = [];
 
   const el = (id) => document.getElementById(id);
+  const escapeHtml = (value = '') => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
   const fmt = (z) => `${z.currency || 'IDR'} ${Number(z.price ?? z.base_rate ?? 0).toLocaleString((z.currency || 'IDR') === 'USD' ? 'en-US' : 'id-ID')}`;
   const notice = (text, isError = false) => {
     const n = el('shipping-admin-notice'); if (!n) return;
@@ -34,6 +35,8 @@ window.AdminShippingPage = (() => {
   }
 
   async function loadZones() {
+    const tbody = el('shipping-rates-tbody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="admin-state admin-state--loading">Memuat zona pengiriman...</td></tr>';
     const { data, error } = await window.supabase.from('shipping_zones').select('*').order('zone_code', { ascending: true });
     if (error) throw error;
     zones = (data || []).map(normalizeZone);
@@ -58,7 +61,7 @@ window.AdminShippingPage = (() => {
       <td><div class="price-editor"><select data-currency-id="${z.id}"><option value="IDR" ${z.currency === 'IDR' ? 'selected' : ''}>IDR</option><option value="USD" ${z.currency === 'USD' ? 'selected' : ''}>USD</option></select><input type="number" min="0" step="${z.currency === 'USD' ? '0.01' : '1'}" value="${z.price}" data-price-id="${z.id}"></div><small>${fmt(z)}</small></td>
       <td><span class="admin-badge admin-badge--completed">Aktif</span><div class="product-meta">${z.updated_at ? new Date(z.updated_at).toLocaleString('id-ID') : '-'}</div></td>
       <td><button class="admin-button admin-button--primary btn-action btn-primary" data-save-id="${z.id}">Simpan Pengaturan</button></td>
-    </tr>`).join('') : '<tr><td colspan="6">Belum ada zona ongkir. Jalankan migration seed shipping_zones.</td></tr>';
+    </tr>`).join('') : '<tr><td colspan="6" class="admin-state admin-state--empty">Belum ada zona ongkir. Gunakan tombol Tambah Zona Pengiriman untuk membuat zona default.</td></tr>';
   }
 
   async function saveZone(id) {
@@ -97,7 +100,11 @@ window.AdminShippingPage = (() => {
   async function init() {
     if (!el('shipping-admin-root') || !window.supabase) return;
     bindEvents();
-    try { await loadZones(); } catch (e) { notice(e.message, true); }
+    try { await loadZones(); } catch (e) {
+      const tbody = el('shipping-rates-tbody');
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="admin-state admin-state--error">Gagal memuat zona pengiriman: ${escapeHtml(e.message)}</td></tr>`;
+      notice(e.message, true);
+    }
   }
   return { init };
 })();
