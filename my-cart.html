@@ -38,7 +38,12 @@
 
               <div id="cart-items-list">
                 <template x-if="$store.cart.items.length === 0">
-                  <p class="cart-empty-message" x-text="$store.i18n.t('cart.emptyMessage')">Your shopping cart is empty.</p>
+                  <div class="cart-empty-state">
+                    <div class="empty-icon"><i data-feather="shopping-cart"></i></div>
+                    <h3 x-text="$store.i18n.t('cart.emptyMessage')">Your shopping cart is empty.</h3>
+                    <p>Tambahkan produk hidroponik favorit Anda sebelum checkout.</p>
+                    <a href="index.html#Product" class="btn btn-primary">Belanja Produk</a>
+                  </div>
                 </template>
 
                 <template x-for="item in $store.cart.details" :key="item.id" x-init="$nextTick(() => setTimeout(() => window.safeFeatherReplace && window.safeFeatherReplace(), 0))">
@@ -73,9 +78,14 @@
                 </template>
               </div>
 
-              <a href="index.html#Product" class="continue-shopping">
-                <i data-feather="arrow-left"></i> <span x-text="$store.i18n.t('cart.continueShopping')">Continue Shopping</span>
-              </a>
+              <div class="cart-actions">
+                <a href="index.html#Product" class="continue-shopping">
+                  <i data-feather="arrow-left"></i> <span x-text="$store.i18n.t('cart.continueShopping')">Continue Shopping</span>
+                </a>
+                <button type="button" class="clear-cart-btn" x-show="$store.cart.items.length > 0" @click="$store.cart.clear(); resetShippingState(); showNotification('Keranjang berhasil dikosongkan.')">
+                  <i data-feather="trash-2"></i> Kosongkan Keranjang
+                </button>
+              </div>
             </div>
 
             <!-- SUMMARY -->
@@ -144,11 +154,14 @@
                 </div>
               </div>
 
-              <div class="summary-item">
+              <div class="summary-item shipping-cost-row">
                 <span x-text="$store.i18n.t('cart.summary.shipping')">Shipping</span>
-                <span id="summary-shipping" x-show="!shipping.isLoading" x-text="window.formatRupiah(ongkir)"></span>
+                <span id="summary-shipping" x-show="!shipping.isLoading" x-text="$store.cart.items.length === 0 ? '-' : window.formatRupiah(ongkir)"></span>
                 <span x-show="shipping.isLoading">Menghitung...</span>
               </div>
+              <p class="summary-note" x-show="$store.cart.items.length > 0 && !shipping.isLoading && ongkir <= 0 && !shipping.error">
+                Ongkir akan dihitung setelah login dan alamat lengkap.
+              </p>
 
               <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #c62828;" x-show="shipping.error" x-text="shipping.error"></p>
               <button class="btn btn-secondary" style="margin-top:0.5rem;" x-show="shipping.error" @click="retryShipping()">Coba lagi</button>
@@ -251,6 +264,14 @@
                 ></span>
               </div>
             </template>
+            <div class="summary-product-item">
+              <span>Subtotal</span>
+              <span x-text="window.formatRupiah(subtotal)"></span>
+            </div>
+            <div class="summary-product-item">
+              <span>Ongkir</span>
+              <span x-text="window.formatRupiah(ongkir)"></span>
+            </div>
             <div class="summary-grand-total">
               <span
                 x-text="`${$store.i18n.t('cart.summary.total')}: ${window.formatRupiah(calculateGrandTotal())}`"

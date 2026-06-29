@@ -85,6 +85,88 @@ async function updateOrderStatusInSupabase(orderCode, newStatus, isPaid) {
   return Array.isArray(data) && data.length ? data[0] : null;
 }
 
+
+async function getUserFromAuthHeader(req) {
+  if (!SUPABASE_SERVICE_ROLE_KEY) return null;
+  const authHeader = req.headers?.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (!token) return null;
+
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) return null;
+  return response.json();
+}
+
+async function getSupabaseProfile(userId) {
+  if (!SUPABASE_SERVICE_ROLE_KEY || !userId) return null;
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=*&limit=1`, {
+    headers: getSupabaseHeaders()
+  });
+  if (!response.ok) return null;
+  const data = await response.json();
+  return Array.isArray(data) && data.length ? data[0] : null;
+}
+
+function buildShippingAddress(profile = {}) {
+  return {
+    recipient_name: profile.full_name || profile.nama_penerima || profile.receiver_name || '',
+    phone_number: profile.phone_number || profile.phone || profile.no_hp || '',
+    address: profile.address || profile.alamat || profile.full_address || '',
+    province: profile.province || profile.provinsi || '',
+    city: profile.regency || profile.city || profile.kota || profile.kabupaten || '',
+    district: profile.district || profile.kecamatan || '',
+    village: profile.village || profile.kelurahan || '',
+    postal_code: profile.postal_code || profile.kode_pos || '',
+    latitude: profile.latitude || profile.lat || null,
+    longitude: profile.longitude || profile.lng || profile.lon || null
+  };
+}
+
+async function createSupabaseOrder(req, order, shippingCost) {
+  if (!SUPABASE_SERVICE_ROLE_KEY) return null;
+  const user = await getUserFromAuthHeader(req);
+  if (!user?.id) return null;
+  const profile = await getSupabaseProfile(user.id);
+  const orderDetails = order.orderDetails.map((item) => ({
+    product_id: item.id,
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+    subtotal: item.price * item.quantity
+  }));
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*`, {
+    method: 'POST',
+    headers: {
+      ...getSupabaseHeaders(),
+      Prefer: 'return=representation'
+    },
+    body: JSON.stringify({
+      user_id: user.id,
+      order_code: order.order_code,
+      order_details: orderDetails,
+      shipping_address: buildShippingAddress(profile),
+      total_amount: order.totalAmount,
+      status: 'pending_payment',
+      notes: `Ongkir: ${shippingCost}`
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to create order in Supabase: ${response.status} ${errorText}`);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) && data.length ? data[0] : null;
+}
+
 function normalizeCart(cart) {
   if (!Array.isArray(cart) || cart.length === 0) {
     return { error: 'Cart must be a non-empty array.' };
@@ -160,6 +242,16 @@ async function createOrder(req, res) {
   });
 
   try {
+    let supabaseOrder = null;
+    try {
+      supabaseOrder = await createSupabaseOrder(req, order, shipping);
+      if (supabaseOrder) {
+        orderRepository.updateByOrderId(order.orderId, { supabase_id: supabaseOrder.id });
+      }
+    } catch (supabaseError) {
+      console.warn('[Order] Supabase order persistence failed; continuing with existing order flow:', supabaseError?.message || supabaseError);
+    }
+
     const snapToken = await midtransService.createSnapToken({
       orderId: order.order_code,
       grossAmount: order.totalAmount,
@@ -177,12 +269,13 @@ async function createOrder(req, res) {
     return res.status(201).json({
       success: true,
       order: {
-        id: updatedOrder?.orderId || order.orderId,
-        order_code: updatedOrder?.order_code || order.order_code,
+        id: supabaseOrder?.id || updatedOrder?.orderId || order.orderId,
+        order_code: supabaseOrder?.order_code || updatedOrder?.order_code || order.order_code,
         status: updatedOrder?.status || order.status,
         total_amount: updatedOrder?.totalAmount || order.totalAmount,
       },
-      snapToken
+      snapToken,
+      clientKey: process.env.MIDTRANS_CLIENT_KEY
     });
   } catch (error) {
     return res.status(500).json({
