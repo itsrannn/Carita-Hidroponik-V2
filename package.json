@@ -7,9 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "node --test",
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "serve .",
+    "start": "serve .",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
   },
   "homepage": "https://github.com/itsrannn/Carita-Hidroponik#readme",
   "devDependencies": {
-    "@playwright/test": "^1.57.0"
+    "@playwright/test": "^1.57.0",
+    "serve": "^14.2.6"
   },
   "dependencies": {
     "cors": "^2.8.6",
