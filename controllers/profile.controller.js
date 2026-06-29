@@ -134,7 +134,6 @@ async function updateProfile(req, res) {
   }
 
   try {
-    console.log('[AUDIT BACKEND] req.body', req.body);
 
     const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
@@ -255,7 +254,6 @@ async function updateProfile(req, res) {
       });
     }
 
-    console.log('[FINAL PAYLOAD]', payload);
 
     const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}&select=*`, {
       method: 'PATCH',

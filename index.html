@@ -3,14 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Carita Hidroponik</title>
+    <title>Carita Hidroponik | Toko Hidroponik Online</title>
+    <meta name="description" content="Belanja kebutuhan hidroponik, nutrisi, benih, dan perlengkapan berkebun modern di Carita Hidroponik." />
+    <link rel="canonical" href="https://caritahidroponik.com/" />
+    <meta property="og:title" content="Carita Hidroponik | Toko Hidroponik Online" />
+    <meta property="og:description" content="Belanja kebutuhan hidroponik, nutrisi, benih, dan perlengkapan berkebun modern di Carita Hidroponik." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://caritahidroponik.com/" />
+    <meta property="og:image" content="https://caritahidroponik.com/img/Logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" href="img/Logo.jpg" type="image/jpg" />
+    <link rel="preload" as="image" href="img/Flyer-1.jpg" fetchpriority="high" />
 
     <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)" />
     <link rel="stylesheet" href="css/chat-widget.css" />
 
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap" />
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap"
       rel="stylesheet"
@@ -65,7 +76,7 @@
         <!-- REFACTORED HERO SLIDER -->
         <div id="hero-slider" class="hero-slider" x-data="heroSlider()">
           <div class="slide-item" :class="{ 'active': currentIndex === 0 }">
-            <img src="img/Flyer-1.jpg" alt="12.12 Sale Promo" class="hero-img" />
+            <img src="img/Flyer-1.jpg" alt="12.12 Sale Promo" class="hero-img" fetchpriority="high" />
             <div class="hero-content">
               <h1 class="hero-title" x-text="$store.i18n.t('hero.title1')">12.12 Big Sale!</h1>
               <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle1')">Get up to 50% off on selected items.</p>
@@ -73,7 +84,7 @@
             </div>
           </div>
           <div class="slide-item" :class="{ 'active': currentIndex === 1 }">
-            <img src="img/Flyer-2.jpg" alt="New A-B Mix Nutrition" class="hero-img" />
+            <img src="img/Flyer-2.jpg" alt="New A-B Mix Nutrition" class="hero-img" loading="lazy" />
             <div class="hero-content">
               <h1 class="hero-title" x-text="$store.i18n.t('hero.title2')">New A-B Mix Nutrition</h1>
               <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle2')">The perfect formula for your hydroponic plants.</p>
@@ -81,7 +92,7 @@
             </div>
           </div>
           <div class="slide-item" :class="{ 'active': currentIndex === 2 }">
-            <img src="img/Flyer-3.jpg" alt="Starter Kit for Beginners" class="hero-img" />
+            <img src="img/Flyer-3.jpg" alt="Starter Kit for Beginners" class="hero-img" loading="lazy" />
             <div class="hero-content">
               <h1 class="hero-title" x-text="$store.i18n.t('hero.title3')">Starter Kit for Beginners</h1>
               <p class="hero-subtitle" x-text="$store.i18n.t('hero.subtitle3')">Everything you need to start your hydroponic journey.</p>
@@ -241,7 +252,7 @@
           <a :href="`news-detail.html?id=${newsItem.id}`" class="news-card-link">
             <article class="news-card">
               <div class="news-card-image-wrapper">
-                <img :src="newsItem.image_url || 'img/coming-soon.jpg'" :alt="newsItem.title[$store.i18n.lang] || newsItem.title['id']" />
+                <img :src="newsItem.image_url || 'img/coming-soon.jpg'" :alt="newsItem.title[$store.i18n.lang] || newsItem.title['id']" loading="lazy" />
               </div>
               <div class="news-card-content">
                 <p class="news-card-meta" x-text="formatDate(newsItem.created_at)"></p>
@@ -262,10 +273,10 @@
 
     <div id="footer-include"></div>
 
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/main.js"></script>
+    <script defer src="https://unpkg.com/feather-icons"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase-client.js"></script>
+    <script defer src="js/main.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js" defer></script>
     <!-- SCRIPT js/script.js & include.js DEPRECATED BY INLINE COMPONENTS -->

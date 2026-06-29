@@ -11,7 +11,9 @@ document.addEventListener('alpine:init', () => {
 
 const API_BASE_URL = 'https://carita-hidroponik-backend.vercel.app';
 const SNAP_TOKEN_ENDPOINT = '/api/payment/create-snap-token';
+const APP_DEBUG = new URLSearchParams(window.location.search).has('debug');
 window.API_BASE_URL = API_BASE_URL;
+window.APP_DEBUG = APP_DEBUG;
 
 const APP_BASE_PATH = (() => {
     const { hostname, pathname } = window.location;
@@ -246,7 +248,7 @@ window.fetchWithDebug = async (input, init = {}) => {
         };
 
         try {
-            console.info(`[Fetch] START (${attempt + 1}/${retries + 1}): ${mergedInit.method || 'GET'} ${targetUrl || input}`);
+            if (APP_DEBUG) console.info(`[Fetch] START (${attempt + 1}/${retries + 1}): ${mergedInit.method || 'GET'} ${targetUrl || input}`);
             const response = await fetch(input, mergedInit);
             clearTimeout(timeoutId);
 
@@ -673,9 +675,16 @@ document.addEventListener('alpine:init', () => {
         isLoading: true,
         errorMessage: '',
 
+        hasLoaded: false,
+        loadPromise: null,
+
         async init() {
+            if (this.loadPromise) return this.loadPromise;
+            if (this.hasLoaded && this.all.length > 0) return this.all;
+
             this.isLoading = true;
             this.errorMessage = '';
+            this.loadPromise = (async () => {
 
             try {
                 if (!window.supabase) {
@@ -699,7 +708,6 @@ document.addEventListener('alpine:init', () => {
 
                     const fallbackLocalizedName = nameObj.id || nameObj.en || item.product_name || item.name || 'Produk';
                     const imageUrl = window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg');
-            const escapedItemId = String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
                     return {
                         ...item,
@@ -718,7 +726,12 @@ document.addEventListener('alpine:init', () => {
                 this.errorMessage = Alpine.store('i18n')?.t?.('products.fetchError') || 'Products are temporarily unavailable.';
             } finally {
                 this.isLoading = false;
+                this.hasLoaded = true;
+                this.loadPromise = null;
             }
+            return this.all;
+            })();
+            return this.loadPromise;
         },
 
         getProductById(id) {
@@ -1017,8 +1030,8 @@ function checkoutPage() {
             this.profileDebug.normalizedProfile = normalizedProfile;
             this.profileDebug.missingFields = missingFields;
 
-            console.log('Checkout profile data:', normalizedProfile);
-            console.log('Missing fields:', missingFields);
+            if (APP_DEBUG) console.info('[Checkout] Profile data:', normalizedProfile);
+            if (APP_DEBUG) console.info('[Checkout] Missing fields:', missingFields);
         },
 
         async loadCheckoutState() {
@@ -1155,7 +1168,7 @@ function checkoutPage() {
         },
 
         async confirmAndProcessCheckout() {
-            console.log('Checkout button clicked');
+            if (APP_DEBUG) console.info('[Checkout] Checkout button clicked');
             const validation = await this.validateCheckout();
             if (!validation.valid) return;
 
@@ -1163,7 +1176,7 @@ function checkoutPage() {
 
             try {
                 const orderPayload = this.buildCreateOrderPayload();
-                console.log('Sending order payload:', orderPayload);
+                if (APP_DEBUG) console.info('[Checkout] Sending order payload:', orderPayload);
                 const orderResult = await this.createOrder(orderPayload);
                 const orderId = orderResult?.order?.id || orderResult?.order?.order_code || orderResult.order_id || orderResult.orderId;
                 const orderCode = orderResult?.order?.order_code || orderResult.order_code || orderId;
@@ -1236,7 +1249,7 @@ function checkoutPage() {
             });
 
             const result = await response.json().catch(() => ({}));
-            console.log('Order response:', result);
+            if (APP_DEBUG) console.info('[Checkout] Order response:', result);
 
             if (!response.ok) {
                 console.error('Checkout failed:', result);
@@ -1284,7 +1297,7 @@ function checkoutPage() {
                 ? snapSession
                 : (snapSession?.token || snapSession?.snapToken || snapSession?.snap_token);
             if (!token) throw new Error('Token Midtrans tidak ditemukan');
-            console.log('[SNAP PAY START]');
+            if (APP_DEBUG) console.info('[Checkout] Snap pay start');
 
             try {
                 await new Promise((resolve, reject) => {

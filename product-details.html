@@ -4,6 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title x-text="$store.i18n.t('productDetail.pageTitle')"></title>
+    <meta name="description" content="Lihat informasi produk hidroponik, harga, stok, dan rekomendasi terkait." />
+    <link rel="canonical" href="https://caritahidroponik.com/product-details.html" />
+    <meta property="og:title" content="Detail Produk | Carita Hidroponik" />
+    <meta property="og:description" content="Lihat informasi produk hidroponik, harga, stok, dan rekomendasi terkait." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://caritahidroponik.com/product-details.html" />
+    <meta property="og:image" content="https://caritahidroponik.com/img/Logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="icon" type="image/x-icon" href="img/Logo.jpg" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/product-details.css" />
@@ -140,6 +149,7 @@
       }
     </style>
 
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap" />
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@300;400;600&display=swap"
       rel="stylesheet"
@@ -347,18 +357,18 @@
 
     <div id="footer-include"></div>
 
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script defer src="https://unpkg.com/feather-icons"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 
     <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase-client.js"></script>
 
     <!-- Alpine Core -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js?nounit=true" defer></script>
 
     <!-- App Logic -->
-    <script src="js/main.js"></script>
-    <script src="js/product-details.js"></script>
+    <script defer src="js/main.js"></script>
+    <script defer src="js/product-details.js"></script>
   </body>
 </html>
