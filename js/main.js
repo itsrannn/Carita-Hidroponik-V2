@@ -552,10 +552,10 @@ document.addEventListener('alpine:init', () => {
             this.currentPage = 1;
         },
 
-        toggleSort() {
-            this.sortOption = this.sortOption === 'price-asc'
-                ? 'price-desc'
-                : 'price-asc';
+        resetFilters() {
+            this.searchTerm = '';
+            this.selectedCategory = 'all';
+            this.sortOption = 'default';
             this.currentPage = 1;
         },
 
@@ -581,6 +581,10 @@ document.addEventListener('alpine:init', () => {
                 return String(localizedName).toLowerCase().includes(term);
             });
 
+            if (this.sortOption === 'name-asc') {
+                filtered.sort((a, b) => this.getProductName(a, lang).localeCompare(this.getProductName(b, lang)));
+            }
+
             if (this.sortOption === 'price-asc' || this.sortOption === 'price-desc') {
                 const asc = this.sortOption === 'price-asc';
                 filtered.sort((a, b) => {
@@ -591,6 +595,18 @@ document.addEventListener('alpine:init', () => {
             }
 
             return filtered;
+        },
+
+        getProductName(item, lang = this.$store.i18n.lang || 'id') {
+            return (item?.name && (item.name[lang] || item.name.id || item.name.en))
+                || item?.product_name
+                || 'Unnamed Product';
+        },
+
+        getCategoryLabel(category) {
+            const normalized = String(category || '').toLowerCase();
+            const map = { benih: 'seeds', nutrisi: 'nutrition', media: 'media', peralatan: 'equipment', promo: 'promos' };
+            return this.$store.i18n.t(`categories.${map[normalized] || normalized}`) || category || '-';
         },
 
         promoItems() {
@@ -614,34 +630,40 @@ document.addEventListener('alpine:init', () => {
         renderProductCard(item) {
             const { finalPrice, percentOff, originalPrice } = window.calculateDiscount(item);
             const isPromo = percentOff > 0;
-            const lang = this.$store.i18n.lang;
-            const itemName = (item.name && (item.name[lang] || item.name.id || item.name.en))
-                || item.product_name
-                || 'Unnamed Product';
+            const itemName = this.getProductName(item);
+            const categoryLabel = this.getCategoryLabel(item.category);
+            const detailUrl = window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`);
+            const imageUrl = window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg');
+            const escapedItemId = String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
             const ribbonHtml = isPromo
-                ? `<div class="discount-ribbon"><span>${percentOff}% OFF</span></div>`
+                ? `<span class="product-discount-badge">-${percentOff}%</span>`
                 : '';
 
             const priceHtml = isPromo
-                ? `<div class="price-container"><div class="price-original">${window.formatRupiah(originalPrice)}</div><div class="price-discounted">${window.formatRupiah(finalPrice)}</div></div>`
-                : `<div class="price">${window.formatRupiah(originalPrice)}</div>`;
+                ? `<div class="price-container"><span class="price-original">${window.formatRupiah(originalPrice)}</span><strong class="price-discounted">${window.formatRupiah(finalPrice)}</strong></div>`
+                : `<strong class="price">${window.formatRupiah(originalPrice)}</strong>`;
 
             return `
-      <a href="${window.toAppPath(`product-details.html?id=${item.id}`)}" class="product-link">
-        <article class="product-card">
-          ${ribbonHtml}
+      <article class="product-card">
+        <a href="${detailUrl}" class="product-link" aria-label="Lihat detail ${itemName}">
           <figure class="product-media">
-            <img src="${window.fixImagePath(item.image_url || item.img)}" alt="${itemName}" />
+            <img src="${imageUrl}" alt="${itemName}" loading="lazy" />
+            ${ribbonHtml}
           </figure>
           <div class="product-body">
+            <span class="product-category">${categoryLabel}</span>
             <h3 class="product-title">${itemName}</h3>
-            <div class="product-meta">
-              ${priceHtml}
-            </div>
+            <div class="product-meta">${priceHtml}</div>
           </div>
-        </article>
-      </a>
+        </a>
+        <div class="product-actions">
+          <a href="${detailUrl}" class="btn-sm btn-detail">Detail</a>
+          <button type="button" class="btn-sm add-cart" onclick="event.preventDefault(); event.stopPropagation(); Alpine.store('cart').add('${escapedItemId}'); window.showSiteNotification && window.showSiteNotification('Ditambahkan ke keranjang');">
+            <i data-feather="shopping-bag"></i> Add
+          </button>
+        </div>
+      </article>
     `;
         }
     }));
@@ -677,6 +699,7 @@ document.addEventListener('alpine:init', () => {
 
                     const fallbackLocalizedName = nameObj.id || nameObj.en || item.product_name || item.name || 'Produk';
                     const imageUrl = window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg');
+            const escapedItemId = String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
                     return {
                         ...item,

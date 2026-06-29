@@ -43,14 +43,18 @@
   "products": {
     "title": "Explore Our Products",
     "subtitle": "Check out our best-selling products",
-    "noneFound": "No products found matching your criteria."
+    "noneFound": "No products found matching your criteria.",
+    "emptyTitle": "No products found",
+    "errorTitle": "Products unavailable",
+    "resetFilters": "Reset filters"
   },
   "sort": {
     "by": "Sort by",
     "default": "Default",
     "priceAsc": "Price: Low to High",
     "priceDesc": "Price: High to Low",
-    "priceLabel": "Price"
+    "priceLabel": "Price",
+    "nameAsc": "Name A-Z"
   },
   "pagination": {
     "prev": "Previous page",

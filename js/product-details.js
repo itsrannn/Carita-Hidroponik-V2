@@ -28,15 +28,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.effect(() => {
         const isLoading = this.$store.products.isLoading;
         if (!isLoading) {
-            this.product = this.$store.products.getProductById(productId) || {
-                id: 1,
-                name: { id: "Produk Mock", en: "Mock Product" },
-                description: { id: "Deskripsi Mock", en: "Mock Description" },
-                price: 50000,
-                image_url: "img/coming-soon.jpg",
-                category: "benih",
-                characteristics: { id: "Karakteristik 1\nKarakteristik 2", en: "Char 1\nChar 2" }
-            };
+            this.product = this.$store.products.getProductById(productId) || null;
             if (this.product) {
                 this.setupProductData();
                 this.refreshProductSuggestions();
@@ -229,38 +221,29 @@ document.addEventListener('alpine:init', () => {
     const { finalPrice, percentOff, originalPrice } = window.calculateDiscount(item);
     const isPromo = percentOff > 0;
     const lang = this.$store.i18n.lang;
-    const itemName = (item.name && item.name[lang]) ? item.name[lang] : ((item.name && item.name['id']) ? item.name['id'] : 'Unnamed Product');
+    const itemName = (item.name && (item.name[lang] || item.name.id || item.name.en)) || item.product_name || 'Unnamed Product';
+    const categoryLabel = item.category || '-';
+    const detailUrl = window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`);
 
-
-    const ribbonHtml = isPromo ? `
-      <div class="discount-ribbon"><span>${percentOff}% OFF</span></div>
-    ` : '';
-
-    const priceHtml = isPromo ? `
-      <div class="price-container">
-        <div class="price-original">${window.formatRupiah(originalPrice)}</div>
-        <div class="price-discounted">${window.formatRupiah(finalPrice)}</div>
-      </div>
-    ` : `<div class="price">${window.formatRupiah(originalPrice)}</div>`;
+    const ribbonHtml = isPromo ? `<span class="product-discount-badge">-${percentOff}%</span>` : '';
+    const priceHtml = isPromo
+      ? `<div class="price-container"><span class="price-original">${window.formatRupiah(originalPrice)}</span><strong class="price-discounted">${window.formatRupiah(finalPrice)}</strong></div>`
+      : `<strong class="price">${window.formatRupiah(originalPrice)}</strong>`;
 
     return `
-      <a href="product-details.html?id=${item.id}" class="product-link">
-        <article class="product-card">
-          ${ribbonHtml}
+      <article class="product-card">
+        <a href="${detailUrl}" class="product-link">
           <figure class="product-media">
-            <img src="${item.image_url ? window.fixImagePath(item.image_url) : 'img/coming-soon.jpg'}" alt="${itemName}" />
+            <img src="${item.image_url ? window.fixImagePath(item.image_url) : 'img/coming-soon.jpg'}" alt="${itemName}" loading="lazy" />
+            ${ribbonHtml}
           </figure>
           <div class="product-body">
+            <span class="product-category">${categoryLabel}</span>
             <h3 class="product-title">${itemName}</h3>
-            <div class="product-meta">
-              ${priceHtml}
-              <button class="btn-sm add-cart" @click.prevent.stop="$store.cart.add(${item.id})">
-                <i data-feather="shopping-bag"></i> Add
-              </button>
-            </div>
+            <div class="product-meta">${priceHtml}</div>
           </div>
-        </article>
-      </a>
+        </a>
+      </article>
     `;
   },
 

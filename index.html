@@ -104,13 +104,22 @@
         </div>
         <!-- END REFACTORED HERO SLIDER -->
 
-        <div class="container" style="padding: 2rem 0;">
-          <form class="search-bar" @submit.prevent="handleSearch(searchTerm)" style="margin: auto; max-width: 600px;">
-            <input type="search" class="input" x-model="searchTerm" :placeholder="$store.i18n.t('search.placeholder')">
-            <button type="submit" class="search-button search-button-borderless">
+        <div class="product-toolbar container">
+          <form class="search-bar" @submit.prevent="handleSearch(searchTerm)">
+            <input type="search" class="input" x-model.debounce.250ms="searchTerm" :placeholder="$store.i18n.t('search.placeholder')" aria-label="Cari produk">
+            <button type="submit" class="search-button search-button-borderless" aria-label="Cari">
               <i data-feather="search"></i>
             </button>
           </form>
+          <label class="sort-control">
+            <span x-text="$store.i18n.t('sort.by')">Urutkan</span>
+            <select class="select" x-model="sortOption" @change="currentPage = 1">
+              <option value="default" x-text="$store.i18n.t('sort.default')">Default</option>
+              <option value="name-asc" x-text="$store.i18n.t('sort.nameAsc')">Nama A-Z</option>
+              <option value="price-asc" x-text="$store.i18n.t('sort.priceAsc')">Harga: Rendah ke Tinggi</option>
+              <option value="price-desc" x-text="$store.i18n.t('sort.priceDesc')">Harga: Tinggi ke Rendah</option>
+            </select>
+          </label>
         </div>
 
         <div class="layout container">
@@ -159,12 +168,8 @@
                 <h1 x-text="$store.i18n.t('products.title')">Featured Products</h1>
                 <p class="muted" x-text="$store.i18n.t('products.subtitle')">Check out our best-selling products</p>
               </div>
-              <div class="header-actions">
-                <button @click="toggleSort()" class="sort-toggle-btn">
-                  <span x-text="$store.i18n.t('sort.priceLabel')"></span>
-                  <span x-show="sortOption === 'price-asc'">↑</span>
-                  <span x-show="sortOption === 'price-desc'">↓</span>
-                </button>
+              <div class="header-actions product-count" x-show="!$store.products.isLoading">
+                <span x-text="processedItems().length + ' produk'"></span>
               </div>
             </section>
 
@@ -190,9 +195,13 @@
                 </template>
 
                 <template x-if="processedItems().length === 0">
-                  <div class="no-products-message" style="text-align: center; padding: 2rem; width: 100%;">
+                  <div class="catalog-state catalog-state-empty">
+                    <i data-feather="package"></i>
+                    <h3 x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.emptyTitle')">Produk tidak ditemukan</h3>
+                    <h3 x-show="$store.products.errorMessage" x-text="$store.i18n.t('products.errorTitle')">Produk belum tersedia</h3>
                     <p x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.noneFound')">No products found.</p>
                     <p x-show="$store.products.errorMessage" x-text="$store.products.errorMessage">Products are temporarily unavailable.</p>
+                    <button type="button" class="btn btn-secondary" @click="resetFilters()" x-show="!$store.products.errorMessage" x-text="$store.i18n.t('products.resetFilters')">Reset filter</button>
                   </div>
                 </template>
               </section>
