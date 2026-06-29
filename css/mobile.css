@@ -229,3 +229,13 @@
     display: none;
   }
 }
+
+/* Sprint 3 catalog mobile contract: single-column product cards. */
+.product-toolbar {
+  grid-template-columns: 1fr;
+}
+
+.product-grid-responsive,
+.products-grid {
+  grid-template-columns: 1fr;
+}

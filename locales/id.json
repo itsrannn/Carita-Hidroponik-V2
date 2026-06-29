@@ -43,14 +43,18 @@
   "products": {
     "title": "Jelajahi Produk Kami",
     "subtitle": "Lihat produk terlaris kami",
-    "noneFound": "Tidak ada produk yang ditemukan sesuai kriteria Anda."
+    "noneFound": "Tidak ada produk yang ditemukan sesuai kriteria Anda.",
+    "emptyTitle": "Produk tidak ditemukan",
+    "errorTitle": "Produk belum tersedia",
+    "resetFilters": "Reset filter"
   },
   "sort": {
     "by": "Urutkan berdasarkan",
     "default": "Default",
     "priceAsc": "Harga: Rendah ke Tinggi",
     "priceDesc": "Harga: Tinggi ke Rendah",
-    "priceLabel": "Harga"
+    "priceLabel": "Harga",
+    "nameAsc": "Nama A-Z"
   },
   "pagination": {
     "prev": "Halaman sebelumnya",
