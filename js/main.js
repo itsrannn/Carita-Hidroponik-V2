@@ -612,9 +612,9 @@ document.addEventListener('alpine:init', () => {
             const imageUrl = window.escapeHtml(window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg'));
             const escapedItemId = String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
-            const ribbonHtml = isPromo
+            const badgeHtml = isPromo
                 ? `<span class="product-discount-badge">-${percentOff}%</span>`
-                : '';
+                : `<span class="product-discount-badge" style="background: var(--color-forest);">Pilihan</span>`;
 
             const priceHtml = isPromo
                 ? `<div class="price-container"><span class="price-original">${window.formatRupiah(originalPrice)}</span><strong class="price-discounted">${window.formatRupiah(finalPrice)}</strong></div>`
@@ -625,18 +625,19 @@ document.addEventListener('alpine:init', () => {
         <a href="${detailUrl}" class="product-link" aria-label="Lihat detail ${itemName}">
           <figure class="product-media">
             <img src="${imageUrl}" alt="${itemName}" loading="lazy" />
-            ${ribbonHtml}
+            ${badgeHtml}
           </figure>
           <div class="product-body">
             <span class="product-category">${categoryLabel}</span>
             <h3 class="product-title">${itemName}</h3>
+            <p class="product-cue">Cocok untuk pemula</p>
             <div class="product-meta">${priceHtml}</div>
           </div>
         </a>
         <div class="product-actions">
           <a href="${detailUrl}" class="btn-sm btn-detail">Detail</a>
           <button type="button" class="btn-sm add-cart" onclick="event.preventDefault(); event.stopPropagation(); Alpine.store('cart').add('${escapedItemId}'); window.showSiteNotification && window.showSiteNotification('Ditambahkan ke keranjang');">
-            <i data-feather="shopping-bag"></i> Add
+            <i data-feather="shopping-bag"></i> Tambah
           </button>
         </div>
       </article>

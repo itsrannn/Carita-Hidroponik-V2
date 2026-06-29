@@ -1,105 +1,44 @@
-<!-- ================= LANGUAGE SWITCHER DROPDOWN FIX ================= -->
-<style>
-  .user-dropdown {
-    position: relative;
-    display: inline-block;
-  }
+<!-- ================= HEADER V2 ================= -->
+<header x-data="headerComponent" class="topbar topbar-v2">
+  <div class="container topbar-inner topbar-v2-inner">
+    <a href="index.html" class="brand brand-v2" aria-label="Carita Hidroponik Home">
+      <img src="img/Logo-Putih.png" alt="Carita Hidroponik" class="brand-logo" />
+      <span>Carita Hidroponik</span>
+    </a>
 
-  .dropdown-content {
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-    z-index: 100;
-    border-radius: 6px;
-    overflow: visible;
-  }
+    <nav class="nav-v2" aria-label="Navigasi utama">
+      <a href="index.html#categories">Kategori</a>
+      <a href="index.html#Product">Produk Pilihan</a>
+      <a href="index.html#starter-bundle">Paket Pemula</a>
+      <a href="index.html#guides">Panduan</a>
+    </nav>
 
-  /* === Language Switcher === */
-  .lang-switcher {
-    position: relative;
-    display: inline-block;
-  }
+    <form class="header-search-v2" action="index.html#Product" role="search">
+      <i data-feather="search"></i>
+      <input name="q" type="search" placeholder="Cari produk..." aria-label="Cari produk" />
+    </form>
 
-  .lang-switcher button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-  }
-
-  .lang-switcher .dropdown-content {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    padding: 6px;
-    min-width: 48px;        /* ✅ FIX: prevent collapse */
-    min-height: 40px;       /* ✅ FIX: ensure visibility */
-
-    background-color: #fff;
-    border-radius: 6px;
-    white-space: nowrap;
-  }
-
-  .lang-switcher .dropdown-content a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 4px;
-    border-radius: 4px;
-    line-height: 1;
-  }
-
-  .lang-switcher .dropdown-content a:hover {
-    background-color: #f1f1f1;
-  }
-
-  .flag-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 9999px;
-    display: block;
-  }
-</style>
-
-<!-- ================= HEADER ================= -->
-<header x-data="headerComponent" class="topbar">
-  <div class="container topbar-inner">
-    <div class="brand">
-      <a href="index.html">
-        <img src="img/Logo-Putih.png" alt="Carita Hidroponik" class="brand-logo" />
-      </a>
-    </div>
-
-    <div class="top-actions">
-      <!-- User Icon -->
-      <a href="https://itsrannn.github.io/Carita-Hidroponik/my-account.html" class="header-icon" aria-label="Account">
+    <div class="top-actions top-actions-v2">
+      <a :href="profileLink" class="header-icon" aria-label="Account">
         <i data-feather="user"></i>
       </a>
 
-      <!-- Cart Icon -->
       <a href="my-cart.html" class="header-icon icon-btn" aria-label="Cart">
         <i data-feather="shopping-cart"></i>
         <span id="cart-count"
-              class="badge"
+              class="badge cart-count-badge"
               x-show="$store.cart.quantity > 0"
               x-text="$store.cart.quantity"></span>
       </a>
 
-      <!-- Language Switcher -->
       <div id="language-switcher"
            x-data="{ open: false }"
            @click.away="open = false"
            class="lang-switcher">
-
         <button @click="open = !open"
+                type="button"
                 class="header-icon"
                 :aria-label="'Current language: ' + $store.i18n.supportedLangs[$store.i18n.lang]">
-
           <img
             :src="$store.i18n.lang === 'en'
               ? 'https://cdn.jsdelivr.net/npm/flag-icons@latest/flags/1x1/gb.svg'
@@ -112,7 +51,6 @@
           <a href="#"
              @click.prevent="$store.i18n.setLang($store.i18n.lang === 'en' ? 'id' : 'en'); open = false"
              :aria-label="'Switch language to ' + $store.i18n.supportedLangs[$store.i18n.lang === 'en' ? 'id' : 'en']">
-
             <img
               :src="$store.i18n.lang === 'en'
                 ? 'https://cdn.jsdelivr.net/npm/flag-icons@latest/flags/1x1/id.svg'
@@ -122,16 +60,6 @@
           </a>
         </div>
       </div>
-
-      <!-- Hamburger (Mobile) -->
-      <template x-if="isOnIndexPage">
-        <button @click="toggleMobileMenu()"
-                id="menu-toggle"
-                class="icon-btn"
-                aria-label="Buka Menu">
-          <i data-feather="menu"></i>
-        </button>
-      </template>
     </div>
   </div>
 </header>
@@ -140,23 +68,12 @@
   function headerComponent() {
     return {
       profileLink: 'https://itsrannn.github.io/Carita-Hidroponik/my-account.html',
-      isOnIndexPage:
-        window.location.pathname.endsWith('index.html') ||
-        window.location.pathname === '/',
 
       init() {
         const supabaseSessionKey = Object.keys(sessionStorage)
           .find(key => key.startsWith('sb-'));
         if (supabaseSessionKey) {
           this.profileLink = 'my-account.html';
-        }
-      },
-
-      toggleMobileMenu() {
-        const sidebar = document.getElementById("categorySidebar");
-        if (sidebar) {
-          sidebar.classList.toggle("mobile-active");
-          document.body.classList.toggle("sidebar-open");
         }
       }
     }
