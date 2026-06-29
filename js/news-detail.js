@@ -177,9 +177,11 @@ document.addEventListener('alpine:init', () => {
             const multilingualContent = this.newsItem.content || this.newsItem.body;
 
             if (!multilingualContent) return '';
-            if (typeof multilingualContent === 'string') return multilingualContent;
+            const content = typeof multilingualContent === 'string'
+                ? multilingualContent
+                : multilingualContent[lang] || multilingualContent.id || multilingualContent.en || '';
 
-            return multilingualContent[lang] || multilingualContent.id || multilingualContent.en || '';
+            return window.sanitizeHtml ? window.sanitizeHtml(content) : content;
         },
 
         get formattedDate() {
