@@ -1044,6 +1044,16 @@ function checkoutPage() {
             }
         },
 
+        resetShippingState() {
+            this.updateShippingCost(0);
+            this.shippingLoaded = false;
+            this.lastShippingRequestKey = null;
+            this.shipping.error = '';
+            this.shipping.estimateLabel = '';
+            this.shipping.zoneLabel = '';
+            this.shipping.totalWeightLabel = '';
+        },
+
         updateShippingCost(cost = 0) {
             this.shipping.cost = Number(cost || 0);
             if (this.shipping.cost > 0) this.clearNotification();
@@ -1126,6 +1136,12 @@ function checkoutPage() {
         async handleCheckout() {
             if (this.isCheckoutLoading || this.isSnapPopupActive) return;
 
+            const cartStore = Alpine.store('cart');
+            if (!cartStore?.items?.length) {
+                this.showNotification('Keranjang belanja kosong. Tambahkan produk terlebih dahulu.', true);
+                return;
+            }
+
             if (this.shouldRefreshShipping()) {
                 await this.calculateShipping('handleCheckout:state-changed', { force: true });
             } else {
@@ -1150,11 +1166,17 @@ function checkoutPage() {
                 console.log('Sending order payload:', orderPayload);
                 const orderResult = await this.createOrder(orderPayload);
                 const orderId = orderResult?.order?.id || orderResult?.order?.order_code || orderResult.order_id || orderResult.orderId;
+                const orderCode = orderResult?.order?.order_code || orderResult.order_code || orderId;
                 if (!orderResult?.snapToken) {
                     throw new Error('Snap token missing');
                 }
                 const snapToken = orderResult.snapToken;
                 if (!orderId) throw new Error('Data pesanan tidak lengkap. Silakan coba lagi.');
+                this.latestSnapSession = {
+                    orderId: orderCode,
+                    orderCode,
+                    clientKey: orderResult?.clientKey
+                };
 
                 this.isSnapPopupActive = true;
                 await this.openMidtransSnap(snapToken, {
@@ -1173,7 +1195,10 @@ function checkoutPage() {
         buildCreateOrderPayload() {
             const cartDetails = Alpine.store('cart').details || [];
             const items = cartDetails.map((item) => ({
+                id: item.id,
                 product_id: item.id,
+                name: item.name,
+                price: Math.round(Number(item.finalPrice || item.price || 0)),
                 quantity: Number(item.quantity),
             }));
 
@@ -1267,8 +1292,7 @@ function checkoutPage() {
                     onSuccess: async (result) => {
                         await this.confirmPaymentStatus(snapMetadata.orderId, 'success', result?.transaction_id);
                         this.showNotification('Pembayaran berhasil. Pesanan Anda diproses.');
-                        localStorage.removeItem('cart');
-                        Alpine.store('cart').items = [];
+                        Alpine.store('cart').clear();
                         if (checkoutPayload.redirectTo) {
                             window.location.href = checkoutPayload.redirectTo;
                             return;
@@ -1278,8 +1302,7 @@ function checkoutPage() {
                     onPending: async (result) => {
                         await this.confirmPaymentStatus(snapMetadata.orderId, 'pending', result?.transaction_id);
                         this.showNotification('Pembayaran pending. Silakan selesaikan pembayaran Anda.');
-                        localStorage.removeItem('cart');
-                        Alpine.store('cart').items = [];
+                        Alpine.store('cart').clear();
                         if (checkoutPayload.redirectTo) {
                             window.location.href = checkoutPayload.redirectTo;
                             return;
@@ -1293,8 +1316,7 @@ function checkoutPage() {
                     onClose: () => {
                         this.showNotification('Popup pembayaran ditutup sebelum selesai.', true);
                         if (checkoutPayload.redirectTo) {
-                            localStorage.removeItem('cart');
-                            Alpine.store('cart').items = [];
+                            Alpine.store('cart').clear();
                             window.location.href = checkoutPayload.redirectTo;
                             return;
                         }
