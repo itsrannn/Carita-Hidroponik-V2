@@ -362,6 +362,15 @@ document.addEventListener('alpine:init', () => {
             finally { this.isLoading.news = false; }
         },
         displayName(value, fallback = '-') { return AdminShared.getLocalized(value, fallback); },
+        imageOf(item) { return item?.image_url || item?.imageUrl || item?.cover_image_url || item?.coverImageUrl || 'img/Logo.jpg'; },
+        discountLabel(product) {
+            const type = product?.discount_type || product?.discountType;
+            const value = Number(product?.discount_value ?? product?.discountValue ?? 0);
+            if (Number(product?.discount_price) > 0) return window.formatRupiah(product.discount_price);
+            if (type === 'percent' && value > 0) return `${value}%`;
+            if ((type === 'fixed' || type === 'amount') && value > 0) return window.formatRupiah(value);
+            return 'Tanpa diskon';
+        },
         isPublished(item) {
             if (typeof item?.is_published === 'boolean') return item.is_published;
             if (typeof item?.published === 'boolean') return item.published;
