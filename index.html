@@ -6,6 +6,7 @@
     <title>Carita Hidroponik</title>
     <link rel="icon" href="img/Logo.jpg" type="image/jpg" />
 
+    <link rel="stylesheet" href="css/design-system.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)" />
     <link rel="stylesheet" href="css/chat-widget.css" />
@@ -105,7 +106,7 @@
 
         <div class="container" style="padding: 2rem 0;">
           <form class="search-bar" @submit.prevent="handleSearch(searchTerm)" style="margin: auto; max-width: 600px;">
-            <input type="search" x-model="searchTerm" :placeholder="$store.i18n.t('search.placeholder')">
+            <input type="search" class="input" x-model="searchTerm" :placeholder="$store.i18n.t('search.placeholder')">
             <button type="submit" class="search-button search-button-borderless">
               <i data-feather="search"></i>
             </button>
@@ -145,7 +146,7 @@
                   </div>
                 </div>
 
-                <div class="products-grid">
+                <div class="products-grid product-grid-responsive">
                   <template x-for="item in promoItems()" :key="item.id">
                     <div x-html="renderProductCard(item)"></div>
                   </template>
@@ -169,7 +170,7 @@
 
             <!-- Skeleton Loading Grid -->
             <template x-if="$store.products.isLoading">
-              <section class="products-grid">
+              <section class="products-grid product-grid-responsive">
                 <template x-for="i in 8" :key="i">
                   <div class="product-card-skeleton">
                     <div class="skeleton-image"></div>
@@ -183,7 +184,7 @@
             </template>
 
             <div x-show="!$store.products.isLoading" x-transition>
-              <section id="productsGrid" class="products-grid">
+              <section id="productsGrid" class="products-grid product-grid-responsive">
                 <template x-for="item in paginatedItems()" :key="item.id">
                   <div x-html="renderProductCard(item)"></div>
                 </template>
