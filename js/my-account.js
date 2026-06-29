@@ -3,6 +3,7 @@ document.addEventListener('alpine:init', () => {
     user: null,
     loading: false,
     isOrderLoading: false,
+    pageError: '',
     activeView: 'profile',
     editProfileMode: false,
     editAddressMode: false,
@@ -78,7 +79,27 @@ document.addEventListener('alpine:init', () => {
         });
       } catch (error) {
         console.error('[Account] Failed to initialize account page:', error);
+        this.pageError = 'Gagal memuat halaman akun. Silakan coba muat ulang halaman.';
       }
+    },
+
+
+    get profileSummary() {
+      const name = this.profile.full_name || this.user?.email || 'Pengguna Carita Hidroponik';
+      const phone = this.profile.phone_number || 'Nomor telepon belum diisi';
+      return `${name} • ${phone}`;
+    },
+
+    get addressSummary() {
+      const parts = [
+        this.profile.address,
+        this.profile.village,
+        this.profile.district,
+        this.profile.regency || this.profile.city,
+        this.profile.province,
+        this.profile.postal_code
+      ].filter((value) => value && String(value).trim());
+      return parts.length ? parts.join(', ') : 'Alamat pengiriman belum lengkap. Klik Edit untuk melengkapi alamat.';
     },
 
     async fetchProfile() {
@@ -92,6 +113,7 @@ document.addEventListener('alpine:init', () => {
 
       if (error) {
         console.error('[Account] Failed to fetch profile:', error);
+        this.pageError = 'Gagal memuat profil. Data lain tetap dapat digunakan.';
         return;
       }
 
@@ -309,7 +331,6 @@ document.addEventListener('alpine:init', () => {
         const parsedLongitude = longitudeValue === '' ? null : Number(longitudeValue);
 
         const selectedVillage = this.villages.find((item) => String(item.id) === String(this.selectedVillage));
-        console.log('[Village Object]', selectedVillage);
         const selectedVillageName = String(
           selectedVillage?.label
           || selectedVillage?.name
@@ -441,15 +462,6 @@ document.addEventListener('alpine:init', () => {
         Authorization: `Bearer ${accessToken}`
       };
 
-      console.info('[Account] updateProfileViaApi request body:', requestBody);
-      console.log('[AUDIT] FINAL PAYLOAD', JSON.stringify(requestBody || {}, null, 2));
-      console.log('[AUDIT] REQUEST META', {
-        endpointUrl,
-        headers: requestHeaders,
-        hasAuthorization: Boolean(requestHeaders.Authorization)
-      });
-      console.log('[AUDIT] PAYLOAD NON EMPTY', Object.keys(requestBody || {}).length > 0);
-      console.log('[AUDIT] update-profile payload', requestBody);
 
       const response = await fetch(endpointUrl, {
         method: 'POST',
@@ -458,15 +470,12 @@ document.addEventListener('alpine:init', () => {
       });
 
       const rawText = await response.text();
-      console.log('[AUDIT] RAW RESPONSE', rawText);
       let result = {};
       try {
         result = rawText ? JSON.parse(rawText) : {};
       } catch (_parseError) {
         result = { raw: rawText };
       }
-      console.log('[AUDIT] update-profile response body', result);
-      console.error('[DEBUG BACKEND RESPONSE]', result);
       if (!response.ok) {
         console.error('[Account] updateProfileViaApi non-OK response:', {
           status: response.status,

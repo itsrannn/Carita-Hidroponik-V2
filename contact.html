@@ -17,7 +17,7 @@
   <body x-data @alpine:init="$store.i18n.init()">
     <div id="header-include"></div>
 
-    <main class="main-content">
+    <main class="main-content contact-page">
       <div class="container">
         <h1 class="page-title" style="text-align: center; margin-bottom: 1rem;" x-text="$store.i18n.t('contact.title')">Contact Us</h1>
         <p class="page-intro" x-text="$store.i18n.t('contact.intro')">
@@ -26,7 +26,7 @@
           form below or through our contact information.
         </p>
 
-        <div class="contact-layout">
+        <div class="contact-grid">
           <div class="contact-form-container">
             <form action="#" method="POST" class="contact-form">
               <div class="form-group">
@@ -52,8 +52,8 @@
             </form>
           </div>
 
-          <aside class="contact-info-container">
-            <h3 x-text="$store.i18n.t('contact.info.title')">Contact Information</h3>
+          <aside class="contact-info">
+            <h2 x-text="$store.i18n.t('contact.info.title')">Contact Information</h2>
             <div class="contact-item">
               <i data-feather="mail"></i>
               <div>
@@ -67,7 +67,7 @@
               <i data-feather="phone"></i>
               <div>
                 <strong x-text="$store.i18n.t('contact.info.whatsapp')">WhatsApp</strong>
-                <a href="https://wa.me/628213969880" target="_blank"
+                <a href="https://wa.me/628213969880" target="_blank" rel="noopener noreferrer"
                   >+62 821-3969-8804</a
                 >
               </div>

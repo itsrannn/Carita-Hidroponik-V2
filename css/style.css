@@ -1818,3 +1818,15 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
   }
 }
+
+.news-card-link:focus-visible,
+.contact-form button:focus-visible,
+.contact-info a:focus-visible {
+  outline: 3px solid rgba(46, 125, 50, 0.24);
+  outline-offset: 3px;
+}
+
+.contact-layout,
+.contact-info-container {
+  /* Backward-compatible aliases for older contact markup. */
+}

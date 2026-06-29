@@ -589,3 +589,12 @@
     white-space: normal;
   }
 }
+
+.order-detail-page a:focus-visible,
+.order-detail-page button:focus-visible,
+.refund-modal input:focus-visible,
+.refund-modal select:focus-visible,
+.refund-modal textarea:focus-visible {
+  outline: 3px solid rgba(46, 125, 50, 0.24);
+  outline-offset: 3px;
+}

@@ -286,3 +286,16 @@
     font-size: 2rem;
   }
 }
+.news-article:focus-within,
+.sidebar-widget:focus-within,
+.related-product-item:focus-visible,
+.sidebar-news-list a:focus-visible,
+.share-buttons a:focus-visible {
+  outline: 3px solid rgba(46, 125, 50, 0.22);
+  outline-offset: 3px;
+}
+
+.news-status {
+  color: #315a3c;
+  font-weight: 700;
+}
