@@ -30,12 +30,15 @@
               <input type="hidden" name="login" value="1" />
               <h1 x-text="$store.i18n.t('login.loginTitle')">Login</h1>
               <div class="input-box">
-                <input type="email" name="email" :placeholder="$store.i18n.t('login.emailPlaceholder')" required />
+                <label class="sr-only" for="login-email" x-text="$store.i18n.t('login.emailPlaceholder')">Email</label>
+                <input id="login-email" type="email" name="email" autocomplete="email" :placeholder="$store.i18n.t('login.emailPlaceholder')" required />
                 <i data-feather="mail"></i>
               </div>
 
               <div class="input-box">
+                <label class="sr-only" for="login-password" x-text="$store.i18n.t('login.passwordPlaceholder')">Password</label>
                 <input
+                  id="login-password"
                   type="password"
                   name="password"
                   :placeholder="$store.i18n.t('login.passwordPlaceholder')"
@@ -84,18 +87,22 @@
               <h1 x-text="$store.i18n.t('login.registerTitle')">Register</h1>
 
               <div class="input-box">
-                <input type="text" name="name" :placeholder="$store.i18n.t('login.namePlaceholder')" required />
+                <label class="sr-only" for="register-name" x-text="$store.i18n.t('login.namePlaceholder')">Name</label>
+                <input id="register-name" type="text" name="name" autocomplete="name" :placeholder="$store.i18n.t('login.namePlaceholder')" required />
                 <i data-feather="user"></i>
               </div>
 
               <div class="input-box">
-                <input type="email" name="email" :placeholder="$store.i18n.t('login.emailPlaceholder')" required />
+                <label class="sr-only" for="register-email" x-text="$store.i18n.t('login.emailPlaceholder')">Email</label>
+                <input id="register-email" type="email" name="email" autocomplete="email" :placeholder="$store.i18n.t('login.emailPlaceholder')" required />
                 <i data-feather="mail"></i>
               </div>
               <span id="email-domain-error" class="error-message" style="display: block; color: red; text-align: left; width: 100%; padding: 0 5px; font-size: 0.8rem; margin-top: -10px; margin-bottom: 10px; visibility: hidden;"></span>
 
               <div class="input-box">
+                <label class="sr-only" for="register-password" x-text="$store.i18n.t('login.passwordPlaceholder')">Password</label>
                 <input
+                  id="register-password"
                   type="password"
                   name="password"
                   :placeholder="$store.i18n.t('login.passwordPlaceholder')"
