@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Admin | Carita Hidroponik</title>
+  <title>Editor Konten | Carita Hidroponik</title>
+    <meta name="description" content="Editor produk dan berita admin Carita Hidroponik." />
+    <link rel="canonical" href="https://caritahidroponik.com/admin-editor.html" />
+    <meta property="og:title" content="Editor Konten | Carita Hidroponik" />
+    <meta property="og:description" content="Editor produk dan berita admin Carita Hidroponik." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://caritahidroponik.com/admin-editor.html" />
+    <meta property="og:image" content="https://caritahidroponik.com/img/Logo.jpg" />
   <link rel="icon" type="image/x-icon" href="img/Logo.jpg" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)" />
@@ -80,9 +87,9 @@
   </div>
   <div class="modal-backdrop" x-show="deleteModal" x-transition><div class="confirm-modal" role="dialog" aria-modal="true"><h2>Konfirmasi Hapus</h2><p x-text="type === 'product' ? 'Produk ini akan dihapus. Tindakan ini tidak dapat dibatalkan.' : 'Berita ini akan dihapus. Tindakan ini tidak dapat dibatalkan.'"></p><div class="admin-table-actions"><button class="admin-button admin-button--secondary" @click="deleteModal=false">Batal</button><button class="admin-button admin-button--danger" @click="deleteItem()">Hapus</button></div></div></div>
   <div id="footer-include" hidden></div>
-  <script src="https://unpkg.com/feather-icons"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="https://unpkg.com/feather-icons"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js?nounit=true" defer></script>
-  <script src="js/supabase-client.js"></script><script src="js/admin-auth.js"></script><script src="js/main.js"></script><script src="js/admin-product-editor.js"></script>
+  <script defer src="js/supabase-client.js"></script><script defer src="js/admin-auth.js"></script><script defer src="js/main.js"></script><script defer src="js/admin-product-editor.js"></script>
 </body>
 </html>

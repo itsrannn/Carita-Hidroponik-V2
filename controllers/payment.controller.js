@@ -259,7 +259,7 @@ async function createOrder(req, res) {
       customerDetails: order.customer || { first_name: 'Customer', email: 'customer@example.com', phone: '' },
     });
 
-    console.log('SNAP TOKEN:', snapToken);
+    if (process.env.NODE_ENV !== 'production') console.info('[Payment] Snap token created.');
 
     const updatedOrder = orderRepository.updateByOrderId(order.orderId, {
       payment_token: snapToken,
@@ -625,8 +625,8 @@ function webhook(req, res) {
 }
 
 async function midtransNotification(req, res) {
-  console.log('==== MIDTRANS WEBHOOK RECEIVED ====');
-  console.log(JSON.stringify(req.body, null, 2));
+  console.info('[Payment] Midtrans webhook received.');
+  if (process.env.NODE_ENV !== 'production') console.info('[Payment] Webhook payload received.');
 
   const serverKey = process.env.MIDTRANS_SERVER_KEY;
   const {
@@ -639,9 +639,9 @@ async function midtransNotification(req, res) {
     signature_key: signatureKey
   } = req.body || {};
 
-  console.log('ORDER ID:', orderId);
-  console.log('TRANSACTION STATUS:', transactionStatus);
-  console.log('FRAUD STATUS:', fraudStatus);
+  console.info('[Payment] Webhook order id:', orderId);
+  console.info('[Payment] Transaction status:', transactionStatus);
+  console.info('[Payment] Fraud status:', fraudStatus);
 
   if (!orderId || !transactionStatus || !statusCode || !grossAmount || !signatureKey) {
     console.error('MIDTRANS WEBHOOK INVALID PAYLOAD');
@@ -664,7 +664,7 @@ async function midtransNotification(req, res) {
 
   try {
     const order = await findOrderByCodeInSupabase(orderId);
-    console.log('FOUND ORDER:', order);
+    if (process.env.NODE_ENV !== 'production') console.info('[Payment] Matching order found.');
 
     if (!order) {
       return res.status(200).json({
@@ -696,7 +696,7 @@ async function midtransNotification(req, res) {
       data = await response.json();
     }
 
-    console.log('UPDATED ORDER:', data);
+    if (process.env.NODE_ENV !== 'production') console.info('[Payment] Order status updated.');
     if (error) {
       console.error('UPDATE ERROR:', error);
       return res.status(500).json({ success: false, message: 'Failed to process Midtrans notification.' });

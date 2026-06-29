@@ -1830,3 +1830,36 @@ h1, h2, h3, h4, h5, h6 {
 .contact-info-container {
   /* Backward-compatible aliases for older contact markup. */
 }
+
+/* QA hardening: keep responsive layouts inside the viewport and make keyboard focus visible. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+button,
+.btn,
+.admin-button,
+.quantity-btn,
+.shipping-option {
+  min-height: 44px;
+}
+
+.form-status-message {
+  margin-top: 0.75rem;
+  color: var(--green);
+  font-weight: 600;
+}

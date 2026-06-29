@@ -37,11 +37,11 @@ if (!window.supabase || typeof window.supabase.createClient !== 'function') {
       fetch: (...args) => {
         const request = args[0];
         const url = request instanceof Request ? request.url : String(request);
-        console.info('[SupabaseFetch] Request:', url);
+        if (window.APP_DEBUG) console.info('[SupabaseFetch] Request:', url);
         const debugFetch = typeof window.fetchWithDebug === 'function' ? window.fetchWithDebug : fetch;
         return debugFetch(...args)
           .then((response) => {
-            console.info('[SupabaseFetch] Response:', {
+            if (window.APP_DEBUG) console.info('[SupabaseFetch] Response:', {
               url,
               status: response.status,
               ok: response.ok
@@ -56,5 +56,5 @@ if (!window.supabase || typeof window.supabase.createClient !== 'function') {
     }
   });
 
-  console.info('[Supabase] Client initialized successfully.', { url: supabaseUrl });
+  if (window.APP_DEBUG) console.info('[Supabase] Client initialized successfully.', { url: supabaseUrl });
 }

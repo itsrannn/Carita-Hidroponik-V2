@@ -722,7 +722,7 @@ document.addEventListener('alpine:init', () => {
 
     toOrderDetailUrl(order = {}) {
       const clickedOrderId = order?.id;
-      console.log('Order ID clicked:', clickedOrderId);
+      if (window.APP_DEBUG) console.info('[Account] Order ID clicked:', clickedOrderId);
       const orderId = encodeURIComponent(clickedOrderId || '');
       return window.toAppPath(`order-detail.html?id=${orderId}`);
     },
