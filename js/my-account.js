@@ -105,13 +105,10 @@ document.addEventListener('alpine:init', () => {
     async fetchProfile() {
       if (!this.user?.id) return;
 
-      const { data, error } = await window.supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', this.user.id)
-        .maybeSingle();
-
-      if (error) {
+      let data;
+      try {
+        data = await window.CaritaServices.supabase.getProfile(this.user.id);
+      } catch (error) {
         console.error('[Account] Failed to fetch profile:', error);
         this.pageError = 'Gagal memuat profil. Data lain tetap dapat digunakan.';
         return;
@@ -136,17 +133,7 @@ document.addEventListener('alpine:init', () => {
       if (!authEmail || String(profile?.email || '').trim()) return profile;
 
       try {
-        const { data, error } = await window.supabase
-          .from('profiles')
-          .update({ email: authEmail })
-          .eq('id', this.user.id)
-          .select('*')
-          .single();
-
-        if (error) {
-          console.error('[Account] Failed to auto-repair profile email:', error);
-          return { ...profile, email: authEmail };
-        }
+        const data = await window.CaritaServices.supabase.updateProfile(this.user.id, { email: authEmail });
 
         console.info('[Account] Auto-repaired missing profile email from auth session.');
         return data || { ...profile, email: authEmail };
@@ -456,48 +443,15 @@ document.addEventListener('alpine:init', () => {
         user_id: payload?.user_id || this.user?.id || sessionUserId,
         ...payload
       };
-      const endpointUrl = window.toApiPath('/api/update-profile');
-      const requestHeaders = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`
-      };
 
-
-      const response = await fetch(endpointUrl, {
-        method: 'POST',
-        headers: requestHeaders,
-        body: JSON.stringify({ data: requestBody })
-      });
-
-      const rawText = await response.text();
-      let result = {};
-      try {
-        result = rawText ? JSON.parse(rawText) : {};
-      } catch (_parseError) {
-        result = { raw: rawText };
-      }
-      if (!response.ok) {
-        console.error('[Account] updateProfileViaApi non-OK response:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: result
-        });
-        const error = new Error(result?.message || result?.error || `HTTP ${response.status}`);
-        error.details = result?.details;
-        error.hint = result?.hint;
-        error.code = result?.code;
-        error.status = response.status;
-        throw error;
-      }
+      const result = await window.CaritaServices.api.updateProfile(requestBody, accessToken);
 
       return this.extractProfileFromApiResult(result);
     },
 
     async fetchProvinces() {
       try {
-        const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        this.provinces = await response.json();
+        this.provinces = await window.CaritaServices.api.getRegion('/provinces.json');
       } catch (error) {
         console.error('[Account] Failed to fetch provinces:', error);
         this.provinces = [];
@@ -520,9 +474,7 @@ document.addEventListener('alpine:init', () => {
       }
 
       try {
-        const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const regenciesResult = await response.json();
+        const regenciesResult = await window.CaritaServices.api.getRegion(`/regencies/${provinceId}.json`);
         if (String(this.selectedProvince) !== provinceId) return;
 
         this.regencies = Array.isArray(regenciesResult) ? regenciesResult : [];
@@ -549,9 +501,7 @@ document.addEventListener('alpine:init', () => {
       }
 
       try {
-        const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${regencyId}.json`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const districtsResult = await response.json();
+        const districtsResult = await window.CaritaServices.api.getRegion(`/districts/${regencyId}.json`);
         if (String(this.selectedRegency) !== regencyId) return;
 
         this.districts = Array.isArray(districtsResult) ? districtsResult : [];
@@ -577,9 +527,7 @@ document.addEventListener('alpine:init', () => {
       }
 
       try {
-        const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${normalizedDistrictId}.json`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const villagesResult = await response.json();
+        const villagesResult = await window.CaritaServices.api.getRegion(`/villages/${normalizedDistrictId}.json`);
         if (String(this.selectedDistrict) !== normalizedDistrictId) return;
 
         this.villages = Array.isArray(villagesResult) ? villagesResult : [];
