@@ -3,6 +3,15 @@ const cors = require('cors');
 
 const app = express();
 
+
+const securityHeaders = (_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+};
+
 const paymentRoutes = require('../routes/payment.routes');
 const profileRoutes = require('../routes/profile.routes');
 const shippingRoutes = require('../routes/shipping.routes');
@@ -15,6 +24,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+app.use(securityHeaders);
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 

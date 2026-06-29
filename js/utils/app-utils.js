@@ -23,6 +23,32 @@
     setTimeout(() => notification.classList.remove('show'), 3000);
   };
 
+  const escapeHtml = (value = '') => String(value ?? '').replace(/[&<>'"]/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+
+  const sanitizeHtml = (html = '') => {
+    const template = document.createElement('template');
+    template.innerHTML = String(html || '');
+
+    template.content.querySelectorAll('script, iframe, object, embed, form, input, button, link, meta').forEach((node) => node.remove());
+    template.content.querySelectorAll('*').forEach((node) => {
+      [...node.attributes].forEach((attribute) => {
+        const name = attribute.name.toLowerCase();
+        const value = String(attribute.value || '').trim();
+        if (name.startsWith('on') || value.toLowerCase().startsWith('javascript:')) {
+          node.removeAttribute(attribute.name);
+        }
+      });
+    });
+
+    return template.innerHTML;
+  };
+
   const setLoadingState = (target, isLoading, loadingClass = 'is-loading') => {
     const element = typeof target === 'string' ? document.querySelector(target) : target;
     if (!element) return;
@@ -46,9 +72,11 @@
     };
   };
 
-  window.CaritaUtils = { formatRupiah, showToast, setLoadingState, handleError, applyImageFallback };
+  window.CaritaUtils = { formatRupiah, showToast, escapeHtml, sanitizeHtml, setLoadingState, handleError, applyImageFallback };
   window.formatRupiah = window.formatRupiah || formatRupiah;
   window.showSiteNotification = window.showSiteNotification || showToast;
+  window.escapeHtml = window.escapeHtml || escapeHtml;
+  window.sanitizeHtml = window.sanitizeHtml || sanitizeHtml;
   window.setLoadingState = window.setLoadingState || setLoadingState;
   window.handleAppError = window.handleAppError || handleError;
   window.applyImageFallback = window.applyImageFallback || applyImageFallback;

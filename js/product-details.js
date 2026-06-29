@@ -49,7 +49,7 @@ document.addEventListener('alpine:init', () => {
       .replace(/<br\s*\/?>/gi, '\n')
       .split('\n')
       .filter(line => line.trim() !== '')
-      .map(line => `<li>✔ ${line.replace(/^-+/, '').trim()}</li>`)
+      .map(line => `<li>✔ ${window.escapeHtml(line.replace(/^-+/, '').trim())}</li>`)
       .join('');
 
     this.priceInfo = this.calculateDiscount(this.product);
@@ -221,9 +221,9 @@ document.addEventListener('alpine:init', () => {
     const { finalPrice, percentOff, originalPrice } = window.calculateDiscount(item);
     const isPromo = percentOff > 0;
     const lang = this.$store.i18n.lang;
-    const itemName = (item.name && (item.name[lang] || item.name.id || item.name.en)) || item.product_name || 'Unnamed Product';
-    const categoryLabel = item.category || '-';
-    const detailUrl = window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`);
+    const itemName = window.escapeHtml((item.name && (item.name[lang] || item.name.id || item.name.en)) || item.product_name || 'Unnamed Product');
+    const categoryLabel = window.escapeHtml(item.category || '-');
+    const detailUrl = window.escapeHtml(window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`));
 
     const ribbonHtml = isPromo ? `<span class="product-discount-badge">-${percentOff}%</span>` : '';
     const priceHtml = isPromo
@@ -234,7 +234,7 @@ document.addEventListener('alpine:init', () => {
       <article class="product-card">
         <a href="${detailUrl}" class="product-link">
           <figure class="product-media">
-            <img src="${item.image_url ? window.fixImagePath(item.image_url) : 'img/coming-soon.jpg'}" alt="${itemName}" loading="lazy" />
+            <img src="${window.escapeHtml(item.image_url ? window.fixImagePath(item.image_url) : window.toAppPath('img/coming-soon.jpg'))}" alt="${itemName}" loading="lazy" />
             ${ribbonHtml}
           </figure>
           <div class="product-body">

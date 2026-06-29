@@ -606,10 +606,10 @@ document.addEventListener('alpine:init', () => {
         renderProductCard(item) {
             const { finalPrice, percentOff, originalPrice } = window.calculateDiscount(item);
             const isPromo = percentOff > 0;
-            const itemName = this.getProductName(item);
-            const categoryLabel = this.getCategoryLabel(item.category);
-            const detailUrl = window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`);
-            const imageUrl = window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg');
+            const itemName = window.escapeHtml(this.getProductName(item));
+            const categoryLabel = window.escapeHtml(this.getCategoryLabel(item.category));
+            const detailUrl = window.escapeHtml(window.toAppPath(`product-details.html?id=${encodeURIComponent(item.id)}`));
+            const imageUrl = window.escapeHtml(window.fixImagePath(item.image_url || item.img || 'img/coming-soon.jpg'));
             const escapedItemId = String(item.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
             const ribbonHtml = isPromo
